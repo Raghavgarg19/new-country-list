@@ -15,6 +15,7 @@ export default function index() {
       const response = await fetch("https://restcountries.com/v3.1/all");
 
       const data = await response.json();
+      console.log(data);
 
       const filteredData = [];
 
@@ -76,7 +77,7 @@ export default function index() {
 
           car: elem?.car,
 
-          timezones: elem?.timezones,
+          timezones: elem?.timezones[0],
 
           continents: elem?.continents,
 
@@ -98,9 +99,10 @@ export default function index() {
 
       // console.log(data);
 
-      setCountries(filteredData);
+      setCountries(data);
+      console.log(countries);
 
-      setCountriesSearch(filteredData);
+      setCountriesSearch(data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -146,6 +148,7 @@ export default function index() {
   // Function to get the day suffix (e.g., "23rd")
   function getDaySuffix(day) {
     if (day >= 11 && day <= 13) {
+
       return "th";
     }
 
@@ -183,7 +186,25 @@ export default function index() {
 
     setCountries(countriesData2);
   };
+  function calcTime(Country, offset) {
+    let len = offset.length;
 
+    let newstring = offset.substring(3, len + 1);
+
+    let offset1 = newstring.replace(":", ".");
+
+    let d = new Date();
+
+    let utc = d.getTime() + d.getTimezoneOffset() * 60000;
+
+    let nd = new Date(utc + 3600000 * offset1);
+
+    let mytime = " " + nd.toLocaleString();
+
+    // setcurrentdate(mytime);
+
+    return mytime;
+  }
   return (
     <>
       <div>
@@ -191,9 +212,10 @@ export default function index() {
           <h2>Countries</h2>
         </div>
 
-        <div>
+        <div className="my-search">
           <div className="search">
             <input
+              className="my-search"
               type="text"
               placeholder="Search countries"
               onChange={(event) => searchCountry(event.target.value)}
@@ -221,7 +243,11 @@ export default function index() {
                       : "-"}
                   </p>
 
-                  <p>Current date and time : {`${formattedDateTime}`}</p>
+                  <p>
+                    Current date and time :{" "}
+                    {calcTime(elem?.name?.common, elem?.timezones[0])}
+                    {/* {`${formattedDateTime}`} */}
+                  </p>
 
                   <button className="showmapbtn">
                     <Link
